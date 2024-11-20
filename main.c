@@ -185,6 +185,14 @@ void separarImagenesPorCanal(const char *archivo) {
         return;
     }
 
+    // Desplegar información de la cabecera
+    if (strcmp(extension, "pnm") == 0) {
+        desplegarCabeceraPNM(archivo);
+    }
+    else if (strcmp(extension, "bmp") == 0) {
+        desplegarCabeceraBMP(archivo);
+    }
+
     // Separar la imagen en sus tres canales
     printf("Separando imagen en canales RGB...\n");
     
@@ -214,6 +222,7 @@ void separarMatrizRoja(const char *archivo) {
 
     // Verificar el tipo de archivo (PNM o BMP)
     if (archivo[strlen(archivo) - 3] == 'p') {  // PNM
+        // Variables para almacenar la información de la cabecera
         char type[3];
         int ancho, alto, valorMax;
         
@@ -221,6 +230,9 @@ void separarMatrizRoja(const char *archivo) {
         fscanf(file, "%s", type);  // P6 o P3
         fscanf(file, "%d %d", &ancho, &alto);  // Ancho y alto
         fscanf(file, "%d", &valorMax);  // Valor máximo de color (255 normalmente)
+
+        // Mostar la información de la cabecera PNM
+        desplegarCabeceraPNM(archivo);
         
         // Verificar el tipo de archivo PNM
         if (strcmp(type, "P6") == 0) {
@@ -287,6 +299,10 @@ void separarMatrizRoja(const char *archivo) {
             return;
         }
 
+
+        // Desplegar la información de la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         // Copiar el encabezado al archivo de salida
         fwrite(header, sizeof(unsigned char), 54, output);
 
@@ -335,6 +351,9 @@ void separarMatrizVerde(const char *archivo) {
         fscanf(file, "%s", type);  // P6 o P3
         fscanf(file, "%d %d", &ancho, &alto);  // Ancho y alto
         fscanf(file, "%d", &valorMax);  // Valor máximo de color (255 normalmente)
+
+        // Mostar la información de la cabecera PNM
+        desplegarCabeceraPNM(archivo);
         
         // Verificar el tipo de archivo PNM
         if (strcmp(type, "P6") == 0) {
@@ -402,6 +421,9 @@ void separarMatrizVerde(const char *archivo) {
             return;
         }
 
+        // Mostar la información de la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         // Copiar el encabezado al archivo de salida
         fwrite(header, sizeof(unsigned char), 54, output);
 
@@ -449,6 +471,9 @@ void separarMatrizAzul(const char *archivo) {
         fscanf(file, "%s", type);  // P6 o P3
         fscanf(file, "%d %d", &ancho, &alto);  // Ancho y alto
         fscanf(file, "%d", &valorMax);  // Valor máximo de color (255 normalmente)
+
+        // Mostar la información de la cabecera PNM
+        desplegarCabeceraPNM(archivo);
         
         // Verificar el tipo de archivo PNM
         if (strcmp(type, "P6") == 0) {
@@ -519,6 +544,9 @@ void separarMatrizAzul(const char *archivo) {
         // Copiar el encabezado al archivo de salida
         fwrite(header, sizeof(unsigned char), 54, output);
 
+        // Mostar la información de la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         unsigned char pixel[3];
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
@@ -563,6 +591,9 @@ void generarImagenGrises(const char *archivo) {
         fscanf(file, "%s", type);  // P6 o P3
         fscanf(file, "%d %d", &ancho, &alto);  // Ancho y alto
         fscanf(file, "%d", &valorMax);  // Valor máximo de color (255 normalmente)
+
+        // Mostar la información de la cabecera PNM
+        desplegarCabeceraPNM(archivo);
         
         // Verificar el tipo de archivo PNM
         if (strcmp(type, "P6") == 0) {
@@ -641,6 +672,9 @@ void generarImagenGrises(const char *archivo) {
         // Copiar el encabezado al archivo de salida
         fwrite(header, sizeof(unsigned char), 54, output);
 
+        // Mostar la información de la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         unsigned char pixel[3];
         for (int y = 0; y < alto; y++) {
             for (int x = 0; x < ancho; x++) {
@@ -679,6 +713,9 @@ void generarImagenBlancoNegro(const char *archivo, int umbral) {
         fscanf(file, "%s", type);  // P6 o P3
         fscanf(file, "%d %d", &ancho, &alto);  // Ancho y alto
         fscanf(file, "%d", &valorMax);  // Valor máximo de color (255 normalmente)
+
+        // Mostrar la cabecera PNM
+        desplegarCabeceraPNM(archivo);
         
         // Verificar el tipo de archivo PNM
         if (strcmp(type, "P6") == 0) {
@@ -760,6 +797,9 @@ void generarImagenBlancoNegro(const char *archivo, int umbral) {
             return;
         }
 
+        // Mostrar la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         // Copiar el encabezado al archivo de salida
         fwrite(header, sizeof(unsigned char), 54, output);
 
@@ -824,6 +864,9 @@ void calcularHistograma(const char *archivo) {
             fclose(file);
             return;
         }
+
+        // Mostrar la cabecera PNM
+        desplegarCabeceraPNM(archivo);
 
         // Saltar comentarios
         int c;
@@ -986,6 +1029,9 @@ void calcularHistograma(const char *archivo) {
             return;
         }
 
+        // Mostrar la cabecera BMP
+        desplegarCabeceraBMP(archivo);
+
         // Verificar profundidad de color (24 bits)
         if (*(unsigned short*)&header[28] != 24) {
             printf("Solo se soportan imágenes BMP de 24 bits\n");
@@ -1110,6 +1156,8 @@ void mezclarImagenes(const char *file1, const char *file2, int alpha) {
     unsigned char *data1 = (unsigned char *)malloc(rowPadded1);
     unsigned char *data2 = (unsigned char *)malloc(rowPadded2);
 
+
+
     // Crear archivo de salida para la imagen mezclada
     FILE *output = fopen("imagenMezclada.pnm", "wb");
     if (!output) {
@@ -1183,3 +1231,4 @@ void realizarTodosProcesos(int umbral, int alpha, const char *archivo1, const ch
     // Mostrando la finalización de los procesos
     printf("Todos los procesos se han completado.\n");
 }
+
